@@ -1,0 +1,40 @@
+---
+  - hosts: SOME_HOST
+    tasks:
+    - name: App FS pre check
+      command: 'df -TPh /opt/app/appName'
+      register: appName_fs
+      changed_when: false
+
+    - name: Debug directory contents
+      debug:
+        msg: "{{ appName_fs }}"
+
+    - name: Find rotated and compressed log files
+      find:
+        paths:
+        - /opt/app/appName/SomeDir/logs
+        - /opt/app/appName/SomeOtherDir/logs
+        patterns: ".*[.](?!log$|lck$|out$|txt$)[^.]*$"
+        recurse: yes
+        use_regex: yes
+      register: FILES_TO_DELETE
+
+#    - name: Print list of files to delete
+#      debug:
+#        msg: "{{ FILES_TO_DELETE }}"
+
+    - name: Remove the files
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ FILES_TO_DELETE.files }}"
+
+    - name: Athena FS post check
+      command: 'df -TPh /opt/app/appName'
+      register: appName_fs
+      changed_when: false
+
+    - name: Debug directory contents
+      debug:
+        msg: "{{ appName_fs }}"
