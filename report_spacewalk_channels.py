@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 import commands
 import getpass 
 import os
@@ -8,6 +9,7 @@ import sys
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import datetime
 
 
 # Functions:
@@ -24,17 +26,21 @@ def list(args):
 def diff(args):
     password = askPass() 
     print("collecting info from channel a...")
-    outputa = commands.getoutput('/usr/bin/spacecmd -u ' + args.user + ' -p \'' + password + '\' softwarechannel_listallpackages ' + args.channel_a + ' 2>&1 ')
+    outputa = commands.getoutput('/usr/bin/spacecmd -u ' + args.user + ' -p \'' + password + '\' softwarechannel_listallpackages ' + args.channel_a + ' 2>/dev/null ')
     print("collecting info from channel b...")
-    outputb = commands.getoutput('/usr/bin/spacecmd -u ' + args.user + ' -p \'' + password + '\' softwarechannel_listallpackages ' + args.channel_b + ' 2>&1 ')
+    outputb = commands.getoutput('/usr/bin/spacecmd -u ' + args.user + ' -p \'' + password + '\' softwarechannel_listallpackages ' + args.channel_b + ' 2>/dev/null ')
     print("generating html report...")
-    htmlreport = difflib.HtmlDiff().make_file(outputa, outputb, context=True)
-    print("sending email...")
-    sendReport(args, htmlreport)
+    htmlreport = difflib.HtmlDiff().make_file(outputa.splitlines(True), outputb.splitlines(True), args.channel_a, args.channel_b)
+    filename = 'report_' + args.channel_a + '_vs_' + args.channel_b + '_' + datetime.datetime.now().strftime("%Y-%m-%d_%H:%M") + '.html'
+    file = open('/var/www/html/pub/reports/' + filename, 'w')
+    file.write(htmlreport)
+    file.close()
     
     if args.output: 
-       print(htmlreport) 
-        
+        print(htmlreport) 
+        #sys.stdout.writelines(htmlreport)
+ 
+    print("Your report is ready at: https://kwspacewalk.kw.com/pub/reports/" + filename)
 
 def askPass():
     password = getpass.getpass(prompt="What's your spacewalk password? ") 
@@ -47,7 +53,7 @@ def print_subHelp(parser_list, parser_diff):
         parser_diff.print_help()
         print("")
    
-def sendReport(args, htmlreport):
+def sendHTMLReport(args, htmlreport):
     senderemail = "root"
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "SpaceWalk channel package report"
@@ -56,12 +62,14 @@ def sendReport(args, htmlreport):
     text = "This is the text report, HTML format is preferred\n"
     part1 = MIMEText(text, 'plain')
     part2 = MIMEText(htmlreport, 'html')
+    #part2 = MIMEText('<html><head></head><body><p>Hi!<br>How are you?<br>Here is the <a href="https://www.python.org">link</a> you wanted. </p></body></html>', 'html')
     msg.attach(part1)
     msg.attach(part2)
     s = smtplib.SMTP('localhost')
     s.sendmail(senderemail, args.email, msg.as_string())
     s.quit()
-    #postconf -e 'message_size_limit = 104857600' 
+    #postconf -e 'message_size_limit = 104857600' && systemctl restart postfix.service
+
 
 # Main Function
 def main():
@@ -77,7 +85,7 @@ def main():
 
     parser_diff = subparsers.add_parser('diff', help="Compare two channels in spacewalk")
     parser_diff.add_argument('-u', "--user", required=True, help="Spacewalk user name is mandatody")
-    parser_diff.add_argument('-e', "--email", required=True, help="Your email address is required to send the report")
+    #parser_diff.add_argument('-e', "--email", required=True, help="Your email address is required to send the report")
     parser_diff.add_argument('-a', "--channel-a", required=True, help="Name of the channel A")
     parser_diff.add_argument('-b', "--channel-b", required=True, help="Name of the channel B")
     parser_diff.add_argument('-o', "--output", action='store_true',  help="Prints the HTML report to the standard output")
