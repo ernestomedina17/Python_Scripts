@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 class Node(object):
 	def __init__(self, value):
 		self.value = value
@@ -12,7 +10,11 @@ class BinaryTree(object):
 
 	def print_tree(self, traversal_type):
 		if traversal_type == "preorder":
-			return self.preorder_print(tree.root, "")
+			return self.preorder_print(self.root, "")
+		elif traversal_type == "inorder":
+			return self.inorder_print(self.root, "")
+		elif traversal_type == "postorder":
+			return self.inorder_print(self.root, "")
 		else:
 			print("Traversal type " + str(traversal_type) + " is not supported")
 			return False
@@ -24,7 +26,22 @@ class BinaryTree(object):
 			traversal = self.preorder_print(start.left, traversal)
 			traversal = self.preorder_print(start.right, traversal)
 		return traversal
- 
+
+	def inorder_print(self, start, traversal):
+		""" Left -> Root -> Right"""
+		if start:
+			traversal = self.inorder_print(start.left, traversal)
+			traversal += (str(start.value) + "-")
+			traversal = self.inorder_print(start.right, traversal)
+		return traversal
+    
+	def postorder_print(self, start, traversal):
+		""" Left -> Root -> Right"""
+		if start:
+			traversal = self.inorder_print(start.left, traversal)
+			traversal = self.inorder_print(start.right, traversal)
+			traversal += (str(start.value) + "-")
+		return traversal
 
 # Set up tree:
 tree = BinaryTree(1)
@@ -58,9 +75,18 @@ tree.root.right.right.right = Node(8)
 #		 8
 
 # Binary Tree Traversals 
-# Pre-order Traversal 
+# Pre-order Traversal = Root, Let, Right 
 # 1 > 2 > 4 > 5 > 3 > 6 > 7 > 8 
+print("Pre Order Traversal")
 print(tree.print_tree("preorder"))
 
-# In-order Traversal 
+# In-order Traversal = Left, Root, Right 
 # 4 > 2 > 5 > 1 > 6 > 3 > 7 > 8 
+print("In Order Traversal")
+print(tree.print_tree("inorder"))
+
+# Post-order Traversal = Left, Right, Root
+# 4 > 5 > 2 > 1 > 6 > 7 > 3 > 8 
+print("Post Order Traversal")
+print(tree.print_tree("postorder"))
+
