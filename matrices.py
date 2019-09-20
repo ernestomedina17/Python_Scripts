@@ -37,6 +37,18 @@ class Matrix:
       array.append(tuple(row)) # Append the list as an immutable tuple
       row = [] #clear the list
     return self.rows, self.cols, array #Returns a tuple
+  @staticmethod
+  def add(a, b): # Pass 2 matrices as arguments
+    array = list() # Declare empty list
+    row = list()   # Declare empty list
+    for r in range(a.rows):
+      for c in range(a.cols):
+        element = a.rows * self.array[r][c]
+        row.append(element)
+      array.append(tuple(row)) # Append the list as an immutable tuple
+      row = [] #clear the list
+    return self.rows, self.cols, array #Returns a tuple
+
 
     
 def main():
