@@ -5,12 +5,12 @@ class Matrix:
     self.rows = rows
     self.cols = cols
     self.array = array
-  def printMatrix(self):
+  def print_matrix(self):
     print("\nYour Matrix:  ")
     for r in range(self.rows):
       print(self.array[r])
   @staticmethod
-  def typeinMatrix():
+  def type_matrix():
     print("How many rows does Matrix A Have?") 
     rows = int(raw_input('---> '))
     print("How many columns does Matrix A Have?") 
@@ -25,11 +25,26 @@ class Matrix:
       array.append(tuple(row)) # Append the list as an immutable tuple
       row = [] #clear the list 
     return rows, cols, array #Returns a tuple
+  def multiply_number(self):
+    array = list() # Declare empty list
+    row = list()   # Declare empty list
+    print("\nWhich number do you want the Matrix to be multiplied for?")
+    multiple = int(raw_input('---> '))
+    for r in range(self.rows):
+      for c in range(self.cols):
+        element = multiple * self.array[r][c]
+        row.append(element)
+      array.append(tuple(row)) # Append the list as an immutable tuple
+      row = [] #clear the list
+    return self.rows, self.cols, array #Returns a tuple
+
     
 def main():
   # Instantiate the object
-  A = Matrix(*Matrix.typeinMatrix()) #The * Expand the tuple as arguments
-  A.printMatrix()
+  A = Matrix(*Matrix.type_matrix()) #The * Expand the tuple as arguments
+  A.print_matrix()
+  B = Matrix(*A.multiply_number())
+  B.print_matrix()
 
 if __name__ == '__main__':
-    main()
+  main()
