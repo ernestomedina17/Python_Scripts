@@ -34,10 +34,23 @@ class Matrix:
         array = list()  # Declare empty list
         row = list()    # Declare empty list
         print("\nWhich number do you want the Matrix to be multiplied for?")
-        multiple = int(raw_input('---> '))
+        multiple = float(raw_input('---> '))
         for r in range(self.rows):
             for c in range(self.cols):
                 element = multiple * self.array[r][c]
+                row.append(element)
+            array.append(tuple(row))  # Append the list as an immutable tuple
+            row = []  # Clear the list
+        return self.rows, self.cols, array  # Returns a tuple
+
+    def divide_number(self):
+        array = list()  # Declare empty list
+        row = list()    # Declare empty list
+        print("\nWhich number do you want the Matrix to be divided by?")
+        divisor = float(raw_input('---> '))
+        for r in range(self.rows):
+            for c in range(self.cols):
+                element = self.array[r][c] / divisor
                 row.append(element)
             array.append(tuple(row))  # Append the list as an immutable tuple
             row = []  # Clear the list
@@ -124,6 +137,12 @@ def main():
 
     # Multiply the matrix by a number
     E = Matrix(*A.multiply_number())
+    E.print_matrix()
+
+    print("\n----------------------------------------------------------------")
+
+    # Dividing the matrix by a number
+    E = Matrix(*A.divide_number())
     E.print_matrix()
 
     print("\n----------------------------------------------------------------")
