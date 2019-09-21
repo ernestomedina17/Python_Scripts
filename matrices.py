@@ -57,6 +57,19 @@ class Matrix:
         return a.rows, a.cols, array  # Returns a tuple
 
     @staticmethod
+    def substract(a, b):  # Pass 2 matrices as arguments
+        array = list()  # Declare empty list
+        row = list()  # Declare empty list
+        print("\nBoth Matrices will be substracted")
+        for r in range(a.rows):
+            for c in range(a.cols):
+                element = a.array[r][c] - b.array[r][c]
+                row.append(element)
+            array.append(tuple(row))  # Append the row as an immutable tuple
+            row = []  # Clear the row
+        return a.rows, a.cols, array  # Returns a tuple
+
+    @staticmethod
     def multiply(a, b):  # Pass 2 matrices as arguments
         if a.cols != b.rows:
             sys.exit('listofitems not long enough')
@@ -99,6 +112,12 @@ def main():
 
     # Add 2 matrices
     D = Matrix(*Matrix.add(A, B))
+    D.print_matrix()
+
+    print("\n----------------------------------------------------------------")
+
+    # Substract 2 matrices
+    D = Matrix(*Matrix.substract(A, B))
     D.print_matrix()
 
     print("\n----------------------------------------------------------------")
